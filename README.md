@@ -13,7 +13,7 @@ A helper class that can create ANY PSR-7 server request.
 ## Installation
 
 ```bash
-composer require nyholm/psr7-server-server
+composer require nyholm/psr7-server
 ```
 
 ## Usage
@@ -32,3 +32,8 @@ $creator = new \Nyholm\Psr7Server\ServerRequestCreator(
 
 $serverRequest = $creator->fromGlobals();
 ```
+
+## Other packages
+
+* [nyholm/psr7](https://github.com/Nyholm/psr7) - A super fast PSR-7 implementation.
+* [zendframework/zend-httphandlerrunner](https://github.com/zendframework/zend-httphandlerrunner) - To send/emit PSR-7 responses
