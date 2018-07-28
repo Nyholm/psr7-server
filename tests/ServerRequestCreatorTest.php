@@ -27,7 +27,6 @@ class ServerRequestCreatorTest extends TestCase
         );
     }
 
-
     public function dataGetUriFromGlobals()
     {
         $server = [
@@ -94,8 +93,6 @@ class ServerRequestCreatorTest extends TestCase
      */
     public function testGetUriFromGlobals($expected, $serverParams)
     {
-
         $this->assertEquals(new Uri($expected), NSA::invokeMethod($this->creator, 'createUriFromArray', $serverParams));
     }
-
 }

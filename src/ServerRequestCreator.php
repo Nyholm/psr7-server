@@ -16,8 +16,11 @@ use Psr\Http\Message\UriInterface;
 class ServerRequestCreator
 {
     private $serverRequestFactory;
+
     private $uriFactory;
+
     private $uploadedFileFactory;
+
     private $streamFactory;
 
     public function __construct(
