@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 class ServerRequestCreatorTest extends TestCase
 {
+    /** @var ServerRequestCreator */
     private $creator;
 
     protected function setUp()/* The :void return type declaration that should be here would cause a BC issue */
@@ -278,8 +279,8 @@ class ServerRequestCreatorTest extends TestCase
      */
     public function testNormalizeFiles($files, $expected)
     {
-        $result = (new ServerRequestFactory())
-            ->createServerRequestFromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], $files)
+        $result = $this->creator
+            ->fromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], $files)
             ->getUploadedFiles();
 
         $this->assertEquals($expected, $result);
@@ -290,7 +291,7 @@ class ServerRequestCreatorTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid value in files specification');
 
-        (new ServerRequestFactory())->createServerRequestFromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], ['test' => 'something']);
+        $this->creator->fromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], ['test' => 'something']);
     }
 
     public function testFromGlobals()
@@ -350,7 +351,7 @@ class ServerRequestCreatorTest extends TestCase
             ],
         ];
 
-        $server = (new ServerRequestFactory())->createServerRequestFromArrays($server, [], $cookie, $get, $post, $files);
+        $server = $this->creator->fromArrays($server, [], $cookie, $get, $post, $files);
 
         $this->assertEquals('POST', $server->getMethod());
         $this->assertEquals(['Host' => ['www.blakesimpson.co.uk']], $server->getHeaders());
