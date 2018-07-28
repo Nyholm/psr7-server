@@ -5,15 +5,38 @@ declare(strict_types=1);
 namespace Tests\Nyholm\Psr7Server;
 
 use Nyholm\NSA;
-use Nyholm\Psr7\Factory\ServerRequestFactory;
 use Nyholm\Psr7\UploadedFile;
 use Nyholm\Psr7\Uri;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\UploadedFileInterface;
 
 class ServerRequestCreatorTest extends TestCase
 {
+    const NUMBER_OF_FILES = 11;
+
+    public static $filenames = [];
+
+    /** @var ServerRequestCreator */
     private $creator;
+
+    public static function initFiles()
+    {
+        if (!empty(self::$filenames)) {
+            return;
+        }
+        $tmpDir = sys_get_temp_dir();
+        for ($i = 0; $i < self::NUMBER_OF_FILES; ++$i) {
+            self::$filenames[] = $filename = $tmpDir.'/file_'.$i;
+            file_put_contents($filename, 'foo'.$i);
+        }
+    }
+
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+        self::initFiles();
+    }
 
     protected function setUp()/* The :void return type declaration that should be here would cause a BC issue */
     {
@@ -31,51 +54,33 @@ class ServerRequestCreatorTest extends TestCase
 
     public function dataNormalizeFiles()
     {
+        self::initFiles();
+
         return [
             'Single file' => [
                 [
                     'file' => [
                         'name' => 'MyFile.txt',
                         'type' => 'text/plain',
-                        'tmp_name' => '/tmp/php/php1h4j1o',
+                        'tmp_name' => self::$filenames[0],
                         'error' => '0',
                         'size' => '123',
                     ],
                 ],
                 [
                     'file' => new UploadedFile(
-                        '/tmp/php/php1h4j1o',
+                        self::$filenames[0],
                         123,
                         UPLOAD_ERR_OK,
                         'MyFile.txt',
                         'text/plain'
-                    ),
-                ],
-            ],
-            'Empty file' => [
-                [
-                    'image_file' => [
-                        'name' => '',
-                        'type' => '',
-                        'tmp_name' => '',
-                        'error' => '4',
-                        'size' => '0',
-                    ],
-                ],
-                [
-                    'image_file' => new UploadedFile(
-                        '',
-                        0,
-                        UPLOAD_ERR_NO_FILE,
-                        '',
-                        ''
                     ),
                 ],
             ],
             'Already Converted' => [
                 [
                     'file' => new UploadedFile(
-                        '/tmp/php/php1h4j1o',
+                        self::$filenames[1],
                         123,
                         UPLOAD_ERR_OK,
                         'MyFile.txt',
@@ -84,7 +89,7 @@ class ServerRequestCreatorTest extends TestCase
                 ],
                 [
                     'file' => new UploadedFile(
-                        '/tmp/php/php1h4j1o',
+                        self::$filenames[1],
                         123,
                         UPLOAD_ERR_OK,
                         'MyFile.txt',
@@ -96,7 +101,7 @@ class ServerRequestCreatorTest extends TestCase
                 [
                     'file' => [
                         new UploadedFile(
-                            '/tmp/php/php1h4j1o',
+                            self::$filenames[2],
                             123,
                             UPLOAD_ERR_OK,
                             'MyFile.txt',
@@ -114,7 +119,7 @@ class ServerRequestCreatorTest extends TestCase
                 [
                     'file' => [
                         new UploadedFile(
-                            '/tmp/php/php1h4j1o',
+                            self::$filenames[2],
                             123,
                             UPLOAD_ERR_OK,
                             'MyFile.txt',
@@ -135,28 +140,28 @@ class ServerRequestCreatorTest extends TestCase
                     'text_file' => [
                         'name' => 'MyFile.txt',
                         'type' => 'text/plain',
-                        'tmp_name' => '/tmp/php/php1h4j1o',
+                        'tmp_name' => self::$filenames[3],
                         'error' => '0',
                         'size' => '123',
                     ],
                     'image_file' => [
                         'name' => '',
                         'type' => '',
-                        'tmp_name' => '',
+                        'tmp_name' => self::$filenames[4],
                         'error' => '4',
                         'size' => '0',
                     ],
                 ],
                 [
                     'text_file' => new UploadedFile(
-                        '/tmp/php/php1h4j1o',
+                        self::$filenames[3],
                         123,
                         UPLOAD_ERR_OK,
                         'MyFile.txt',
                         'text/plain'
                     ),
                     'image_file' => new UploadedFile(
-                        '',
+                        self::$filenames[4],
                         0,
                         UPLOAD_ERR_NO_FILE,
                         '',
@@ -176,8 +181,8 @@ class ServerRequestCreatorTest extends TestCase
                             1 => 'image/png',
                         ],
                         'tmp_name' => [
-                            0 => '/tmp/php/hp9hskjhf',
-                            1 => '/tmp/php/php1h4j1o',
+                            0 => self::$filenames[5],
+                            1 => self::$filenames[6],
                         ],
                         'error' => [
                             0 => '0',
@@ -204,10 +209,10 @@ class ServerRequestCreatorTest extends TestCase
                             ],
                         ],
                         'tmp_name' => [
-                            'other' => '/tmp/php/hp9hskjhf',
+                            'other' => self::$filenames[7],
                             'test' => [
-                                0 => '/tmp/php/asifu2gp3',
-                                1 => '',
+                                0 => self::$filenames[8],
+                                1 => self::$filenames[9],
                             ],
                         ],
                         'error' => [
@@ -229,14 +234,14 @@ class ServerRequestCreatorTest extends TestCase
                 [
                     'file' => [
                         0 => new UploadedFile(
-                            '/tmp/php/hp9hskjhf',
+                            self::$filenames[5],
                             123,
                             UPLOAD_ERR_OK,
                             'MyFile.txt',
                             'text/plain'
                         ),
                         1 => new UploadedFile(
-                            '/tmp/php/php1h4j1o',
+                            self::$filenames[6],
                             7349,
                             UPLOAD_ERR_OK,
                             'Image.png',
@@ -245,7 +250,7 @@ class ServerRequestCreatorTest extends TestCase
                     ],
                     'nested' => [
                         'other' => new UploadedFile(
-                            '/tmp/php/hp9hskjhf',
+                            self::$filenames[7],
                             421,
                             UPLOAD_ERR_OK,
                             'Flag.txt',
@@ -253,14 +258,14 @@ class ServerRequestCreatorTest extends TestCase
                         ),
                         'test' => [
                             0 => new UploadedFile(
-                                '/tmp/php/asifu2gp3',
+                                self::$filenames[8],
                                 32,
                                 UPLOAD_ERR_OK,
                                 'Stuff.txt',
                                 'text/plain'
                             ),
                             1 => new UploadedFile(
-                                '',
+                                self::$filenames[9],
                                 0,
                                 UPLOAD_ERR_NO_FILE,
                                 '',
@@ -278,11 +283,36 @@ class ServerRequestCreatorTest extends TestCase
      */
     public function testNormalizeFiles($files, $expected)
     {
-        $result = (new ServerRequestFactory())
-            ->createServerRequestFromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], $files)
+        $result = $this->creator
+            ->fromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], $files)
             ->getUploadedFiles();
 
-        $this->assertEquals($expected, $result);
+        $validateInner = function (UploadedFileInterface $expectedFile, UploadedFileInterface $file) {
+            $this->assertEquals($expectedFile->getSize(), $file->getSize());
+            $this->assertEquals($expectedFile->getError(), $file->getError());
+            $this->assertEquals($expectedFile->getClientFilename(), $file->getClientFilename());
+            $this->assertEquals($expectedFile->getClientMediaType(), $file->getClientMediaType());
+            if (UPLOAD_ERR_OK === $expectedFile->getError()) {
+                $this->assertEquals(
+                    $expectedFile->getStream()->getMetadata('uri'),
+                    $file->getStream()->getMetadata('uri')
+                );
+            }
+        };
+
+        $validate = function ($expected, $result, $self) use ($validateInner) {
+            foreach ($expected as $i => $e) {
+                if (is_array($e)) {
+                    $self($e, $result[$i], $self);
+
+                    continue;
+                }
+                $this->assertNotEmpty($result[$i]);
+                $validateInner($e, $result[$i]);
+            }
+        };
+
+        $validate($expected, $result, $validate);
     }
 
     public function testNormalizeFilesRaisesException()
@@ -290,7 +320,7 @@ class ServerRequestCreatorTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid value in files specification');
 
-        (new ServerRequestFactory())->createServerRequestFromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], ['test' => 'something']);
+        $this->creator->fromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], ['test' => 'something']);
     }
 
     public function testFromGlobals()
@@ -344,13 +374,13 @@ class ServerRequestCreatorTest extends TestCase
             'file' => [
                 'name' => 'MyFile.txt',
                 'type' => 'text/plain',
-                'tmp_name' => '/tmp/php/php1h4j1o',
+                'tmp_name' => self::$filenames[10],
                 'error' => UPLOAD_ERR_OK,
-                'size' => 123,
+                'size' => 5,
             ],
         ];
 
-        $server = (new ServerRequestFactory())->createServerRequestFromArrays($server, [], $cookie, $get, $post, $files);
+        $server = $this->creator->fromArrays($server, [], $cookie, $get, $post, $files);
 
         $this->assertEquals('POST', $server->getMethod());
         $this->assertEquals(['Host' => ['www.blakesimpson.co.uk']], $server->getHeaders());
@@ -365,21 +395,19 @@ class ServerRequestCreatorTest extends TestCase
             $server->getUri()
         );
 
-        $expectedFiles = [
-            'file' => new UploadedFile(
-                '/tmp/php/php1h4j1o',
-                123,
-                UPLOAD_ERR_OK,
-                'MyFile.txt',
-                'text/plain'
-            ),
-        ];
+        /** @var UploadedFile $file */
+        $file = $server->getUploadedFiles()['file'];
 
-        $this->assertEquals($expectedFiles, $server->getUploadedFiles());
+        $this->assertEquals(5, $file->getSize());
+        $this->assertEquals(UPLOAD_ERR_OK, $file->getError());
+        $this->assertEquals('MyFile.txt', $file->getClientFilename());
+        $this->assertEquals('text/plain', $file->getClientMediaType());
+        $this->assertEquals(self::$filenames[10], $file->getStream()->getMetadata('uri'));
     }
 
     public function dataGetUriFromGlobals()
     {
+        self::initFiles();
         $server = [
             'PHP_SELF' => '/blog/article.php',
             'GATEWAY_INTERFACE' => 'CGI/1.1',

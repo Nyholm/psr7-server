@@ -107,6 +107,8 @@ class ServerRequestCreator
      *
      * @param array $files A array which respect $_FILES structure
      *
+     * @return UploadedFileInterface[]
+     *
      * @throws \InvalidArgumentException for unrecognized values
      */
     private function normalizeFiles(array $files): array
