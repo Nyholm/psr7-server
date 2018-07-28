@@ -120,8 +120,6 @@ class ServerRequestCreator
                 $normalized[$key] = $this->createUploadedFileFromSpec($value);
             } elseif (is_array($value)) {
                 $normalized[$key] = $this->normalizeFiles($value);
-
-                continue;
             } else {
                 throw new \InvalidArgumentException('Invalid value in files specification');
             }
