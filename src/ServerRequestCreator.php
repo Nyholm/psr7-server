@@ -183,7 +183,7 @@ class ServerRequestCreator
      *
      * @param array $server Typically $_SERVER or similar structure.
      */
-    public function createUriFromArray(array $server): UriInterface
+    private function createUriFromArray(array $server): UriInterface
     {
         $uri = $this->uriFactory->createUri('');
 
