@@ -29,7 +29,6 @@ class ServerRequestCreatorTest extends TestCase
         );
     }
 
-
     public function dataNormalizeFiles()
     {
         return [
@@ -378,7 +377,6 @@ class ServerRequestCreatorTest extends TestCase
 
         $this->assertEquals($expectedFiles, $server->getUploadedFiles());
     }
-
 
     public function dataGetUriFromGlobals()
     {
