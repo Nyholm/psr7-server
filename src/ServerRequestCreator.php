@@ -96,6 +96,9 @@ class ServerRequestCreator
     private function getUriFromEnvWithHTTP(array $environment): UriInterface
     {
         $uri = $this->createUriFromArray($environment);
+        if (empty($uri->getScheme())) {
+            $uri = $uri->withScheme('http');
+        }
 
         return $uri;
     }
@@ -194,8 +197,6 @@ class ServerRequestCreator
             $uri = $uri->withScheme($server['REQUEST_SCHEME']);
         } elseif (isset($server['HTTPS'])) {
             $uri = $uri->withScheme('on' === $server['HTTPS'] ? 'https' : 'http');
-        } else {
-            $uri = $uri->withScheme('http');
         }
 
         if (isset($server['HTTP_HOST'])) {
