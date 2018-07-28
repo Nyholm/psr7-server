@@ -7,7 +7,6 @@ namespace Nyholm\Psr7Server;
 use Interop\Http\Factory\StreamFactoryInterface;
 use Interop\Http\Factory\UploadedFileFactoryInterface;
 use Interop\Http\Factory\UriFactoryInterface;
-use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Interop\Http\Factory\ServerRequestFactoryInterface;
@@ -37,10 +36,10 @@ class ServerRequestCreator
 
     /**
      * Create a new server request from the current environment variables.
-     * Defaults to a GET request to minimise the risk of an InvalidArgumentException.
+     * Defaults to a GET request to minimise the risk of an \InvalidArgumentException.
      * Includes the current request headers as supplied by the server through `getallheaders()`.
      *
-     * @throws InvalidArgumentException If no valid method or URI can be determined.
+     * @throws \InvalidArgumentException If no valid method or URI can be determined.
      */
     public function fromGlobals(): ServerRequestInterface
     {
@@ -63,7 +62,7 @@ class ServerRequestCreator
      * @param array $post    Typically $_POST or similar structure.
      * @param array $files   Typically $_FILES or similar structure.
      *
-     * @throws InvalidArgumentException If no valid method or URI can be determined.
+     * @throws \InvalidArgumentException If no valid method or URI can be determined.
      */
     public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], array $post = [], array $files = []): ServerRequestInterface
     {
@@ -87,7 +86,7 @@ class ServerRequestCreator
     private function getMethodFromEnv(array $environment): string
     {
         if (false === isset($environment['REQUEST_METHOD'])) {
-            throw new InvalidArgumentException('Cannot determine HTTP method');
+            throw new \InvalidArgumentException('Cannot determine HTTP method');
         }
 
         return $environment['REQUEST_METHOD'];
@@ -108,7 +107,7 @@ class ServerRequestCreator
      *
      * @param array $files A array which respect $_FILES structure
      *
-     * @throws InvalidArgumentException for unrecognized values
+     * @throws \InvalidArgumentException for unrecognized values
      */
     private function normalizeFiles(array $files): array
     {
@@ -124,7 +123,7 @@ class ServerRequestCreator
 
                 continue;
             } else {
-                throw new InvalidArgumentException('Invalid value in files specification');
+                throw new \InvalidArgumentException('Invalid value in files specification');
             }
         }
 
