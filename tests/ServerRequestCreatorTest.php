@@ -14,6 +14,7 @@ use Psr\Http\Message\UploadedFileInterface;
 class ServerRequestCreatorTest extends TestCase
 {
     const NUMBER_OF_FILES = 11;
+
     public static $filenames = [];
 
     /** @var ServerRequestCreator */
@@ -25,7 +26,7 @@ class ServerRequestCreatorTest extends TestCase
             return;
         }
         $tmpDir = sys_get_temp_dir();
-        for ($i = 0; $i < self::NUMBER_OF_FILES; $i++) {
+        for ($i = 0; $i < self::NUMBER_OF_FILES; ++$i) {
             self::$filenames[] = $filename = $tmpDir.'/file_'.$i;
             file_put_contents($filename, 'foo'.$i);
         }
@@ -54,6 +55,7 @@ class ServerRequestCreatorTest extends TestCase
     public function dataNormalizeFiles()
     {
         self::initFiles();
+
         return [
             'Single file' => [
                 [
@@ -290,7 +292,7 @@ class ServerRequestCreatorTest extends TestCase
             $this->assertEquals($expectedFile->getError(), $file->getError());
             $this->assertEquals($expectedFile->getClientFilename(), $file->getClientFilename());
             $this->assertEquals($expectedFile->getClientMediaType(), $file->getClientMediaType());
-            if ($expectedFile->getError() === UPLOAD_ERR_OK) {
+            if (UPLOAD_ERR_OK === $expectedFile->getError()) {
                 $this->assertEquals(
                     $expectedFile->getStream()->getMetadata('uri'),
                     $file->getStream()->getMetadata('uri')
@@ -302,6 +304,7 @@ class ServerRequestCreatorTest extends TestCase
             foreach ($expected as $i => $e) {
                 if (is_array($e)) {
                     $self($e, $result[$i], $self);
+
                     continue;
                 }
                 $this->assertNotEmpty($result[$i]);
@@ -391,7 +394,6 @@ class ServerRequestCreatorTest extends TestCase
             new Uri('http://www.blakesimpson.co.uk/blog/article.php?id=10&user=foo'),
             $server->getUri()
         );
-
 
         /** @var UploadedFile $file */
         $file = $server->getUploadedFiles()['file'];
