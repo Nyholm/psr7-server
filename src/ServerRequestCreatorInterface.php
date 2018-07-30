@@ -21,13 +21,13 @@ interface ServerRequestCreatorInterface
     /**
      * Create a new server request from a set of arrays.
      *
-     * @param array $server  Typically $_SERVER or similar structure.
-     * @param array $headers Typically the output of getallheaders() or similar structure.
-     * @param array $cookie  Typically $_COOKIE or similar structure.
-     * @param array $get     Typically $_GET or similar structure.
-     * @param array $post    Typically $_POST or similar structure.
-     * @param array $files   Typically $_FILES or similar structure.
-     * @param StreamInterface|resource|string|null $body Typically stdIn
+     * @param array                                $server  Typically $_SERVER or similar structure.
+     * @param array                                $headers Typically the output of getallheaders() or similar structure.
+     * @param array                                $cookie  Typically $_COOKIE or similar structure.
+     * @param array                                $get     Typically $_GET or similar structure.
+     * @param array                                $post    Typically $_POST or similar structure.
+     * @param array                                $files   Typically $_FILES or similar structure.
+     * @param StreamInterface|resource|string|null $body    Typically stdIn
      *
      * @throws \InvalidArgumentException If no valid method or URI can be determined.
      */

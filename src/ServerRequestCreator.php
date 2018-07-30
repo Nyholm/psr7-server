@@ -70,7 +70,6 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
             ->withParsedBody($post)
             ->withUploadedFiles($this->normalizeFiles($files));
 
-
         if (null === $body) {
             return $serverRequest;
         }
