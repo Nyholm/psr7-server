@@ -476,7 +476,7 @@ class ServerRequestCreatorTest extends TestCase
     }
 
     /**
-     * Test from zendframework/zend-diactoros
+     * Test from zendframework/zend-diactoros.
      */
     public function testMarshalsExpectedHeadersFromServerArray()
     {
@@ -504,7 +504,7 @@ class ServerRequestCreatorTest extends TestCase
     }
 
     /**
-     * Test from zendframework/zend-diactoros
+     * Test from zendframework/zend-diactoros.
      */
     public function testMarshalsVariablesPrefixedByApacheFromServerArray()
     {
