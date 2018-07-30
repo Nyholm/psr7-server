@@ -8,11 +8,12 @@ use Interop\Http\Factory\StreamFactoryInterface;
 use Interop\Http\Factory\UploadedFileFactoryInterface;
 use Interop\Http\Factory\UriFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Interop\Http\Factory\ServerRequestFactoryInterface;
 use Psr\Http\Message\UriInterface;
 
-class ServerRequestCreator
+class ServerRequestCreator implements ServerRequestCreatorInterface
 {
     private $serverRequestFactory;
 
@@ -35,11 +36,7 @@ class ServerRequestCreator
     }
 
     /**
-     * Create a new server request from the current environment variables.
-     * Defaults to a GET request to minimise the risk of an \InvalidArgumentException.
-     * Includes the current request headers as supplied by the server through `getallheaders()`.
-     *
-     * @throws \InvalidArgumentException If no valid method or URI can be determined.
+     * {@inheritdoc}
      */
     public function fromGlobals(): ServerRequestInterface
     {
@@ -53,18 +50,9 @@ class ServerRequestCreator
     }
 
     /**
-     * Create a new server request from a set of arrays.
-     *
-     * @param array $server  Typically $_SERVER or similar structure.
-     * @param array $headers Typically the output of getallheaders() or similar structure.
-     * @param array $cookie  Typically $_COOKIE or similar structure.
-     * @param array $get     Typically $_GET or similar structure.
-     * @param array $post    Typically $_POST or similar structure.
-     * @param array $files   Typically $_FILES or similar structure.
-     *
-     * @throws \InvalidArgumentException If no valid method or URI can be determined.
+     * {@inheritdoc}
      */
-    public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], array $post = [], array $files = []): ServerRequestInterface
+    public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], array $post = [], array $files = [], $body = null): ServerRequestInterface
     {
         $method = $this->getMethodFromEnv($server);
         $uri = $this->getUriFromEnvWithHTTP($server);
@@ -75,12 +63,63 @@ class ServerRequestCreator
             $serverRequest = $serverRequest->withAddedHeader($name, $value);
         }
 
-        return $serverRequest
+        $serverRequest = $serverRequest
             ->withProtocolVersion($protocol)
             ->withCookieParams($cookie)
             ->withQueryParams($get)
             ->withParsedBody($post)
             ->withUploadedFiles($this->normalizeFiles($files));
+
+        if (null === $body) {
+            return $serverRequest;
+        }
+
+        if (is_resource($body)) {
+            $body = $this->streamFactory->createStreamFromResource($body);
+        } elseif (is_string($body)) {
+            $body = $this->streamFactory->createStream($body);
+        } elseif (!$body instanceof StreamInterface) {
+            throw new \InvalidArgumentException('The $body parameter to ServerRequestCreator::fromArrays must be string, resource or StreamInterface');
+        }
+
+        return $serverRequest->withBody($body);
+    }
+
+    /**
+     * Implementation from Zend\Diactoros\marshalHeadersFromSapi().
+     */
+    public function getHeadersFromServer(array $server): array
+    {
+        $headers = [];
+        foreach ($server as $key => $value) {
+            // Apache prefixes environment variables with REDIRECT_
+            // if they are added by rewrite rules
+            if (0 === strpos($key, 'REDIRECT_')) {
+                $key = substr($key, 9);
+
+                // We will not overwrite existing variables with the
+                // prefixed versions, though
+                if (array_key_exists($key, $server)) {
+                    continue;
+                }
+            }
+
+            if ($value && 0 === strpos($key, 'HTTP_')) {
+                $name = strtr(strtolower(substr($key, 5)), '_', '-');
+                $headers[$name] = $value;
+
+                continue;
+            }
+
+            if ($value && 0 === strpos($key, 'CONTENT_')) {
+                $name = 'content-'.strtolower(substr($key, 8));
+                $headers[$name] = $value;
+
+                continue;
+            }
+        }
+
+        return $headers;
     }
 
     private function getMethodFromEnv(array $environment): string
