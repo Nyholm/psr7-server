@@ -71,7 +71,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
     }
 
     /**
-     * Implementation from Zend\Diactoros\marshalHeadersFromSapi()
+     * Implementation from Zend\Diactoros\marshalHeadersFromSapi().
      */
     public function getHeadersFromServer(array $server): array
     {
@@ -79,7 +79,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
         foreach ($server as $key => $value) {
             // Apache prefixes environment variables with REDIRECT_
             // if they are added by rewrite rules
-            if (strpos($key, 'REDIRECT_') === 0) {
+            if (0 === strpos($key, 'REDIRECT_')) {
                 $key = substr($key, 9);
 
                 // We will not overwrite existing variables with the
@@ -89,15 +89,17 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
                 }
             }
 
-            if ($value && strpos($key, 'HTTP_') === 0) {
+            if ($value && 0 === strpos($key, 'HTTP_')) {
                 $name = strtr(strtolower(substr($key, 5)), '_', '-');
                 $headers[$name] = $value;
+
                 continue;
             }
 
-            if ($value && strpos($key, 'CONTENT_') === 0) {
-                $name = 'content-' . strtolower(substr($key, 8));
+            if ($value && 0 === strpos($key, 'CONTENT_')) {
+                $name = 'content-'.strtolower(substr($key, 8));
                 $headers[$name] = $value;
+
                 continue;
             }
         }
