@@ -474,4 +474,52 @@ class ServerRequestCreatorTest extends TestCase
     {
         $this->assertEquals(new Uri($expected), NSA::invokeMethod($this->creator, 'createUriFromArray', $serverParams));
     }
+
+    /**
+     * Test from zendframework/zend-diactoros
+     */
+    public function testMarshalsExpectedHeadersFromServerArray()
+    {
+        $server = [
+            'HTTP_COOKIE' => 'COOKIE',
+            'HTTP_AUTHORIZATION' => 'token',
+            'HTTP_CONTENT_TYPE' => 'application/json',
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_X_FOO_BAR' => 'FOOBAR',
+            'CONTENT_MD5' => 'CONTENT-MD5',
+            'CONTENT_LENGTH' => 'UNSPECIFIED',
+        ];
+
+        $expected = [
+            'cookie' => 'COOKIE',
+            'authorization' => 'token',
+            'content-type' => 'application/json',
+            'accept' => 'application/json',
+            'x-foo-bar' => 'FOOBAR',
+            'content-md5' => 'CONTENT-MD5',
+            'content-length' => 'UNSPECIFIED',
+        ];
+
+        $this->assertSame($expected, $this->creator->getHeadersFromServer($server));
+    }
+
+    /**
+     * Test from zendframework/zend-diactoros
+     */
+    public function testMarshalsVariablesPrefixedByApacheFromServerArray()
+    {
+        // Non-prefixed versions will be preferred
+        $server = [
+            'HTTP_X_FOO_BAR' => 'nonprefixed',
+            'REDIRECT_HTTP_AUTHORIZATION' => 'token',
+            'REDIRECT_HTTP_X_FOO_BAR' => 'prefixed',
+        ];
+
+        $expected = [
+            'authorization' => 'token',
+            'x-foo-bar' => 'nonprefixed',
+        ];
+
+        $this->assertEquals($expected, $this->creator->getHeadersFromServer($server));
+    }
 }
