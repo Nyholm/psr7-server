@@ -323,7 +323,7 @@ class ServerRequestCreatorTest extends TestCase
         $this->creator->fromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], ['test' => 'something']);
     }
 
-    public function testFromGlobals()
+    public function testFromArrays()
     {
         $server = [
             'PHP_SELF' => '/blog/article.php',
@@ -380,11 +380,11 @@ class ServerRequestCreatorTest extends TestCase
             ],
         ];
 
-        $server = $this->creator->fromArrays($server, [], $cookie, $get, $post, $files);
+        $server = $this->creator->fromArrays($server, [], $cookie, $get, $post, $files, 'foobar');
 
         $this->assertEquals('POST', $server->getMethod());
         $this->assertEquals(['Host' => ['www.blakesimpson.co.uk']], $server->getHeaders());
-        $this->assertEquals('', (string) $server->getBody());
+        $this->assertEquals('foobar', (string) $server->getBody());
         $this->assertEquals('1.0', $server->getProtocolVersion());
         $this->assertEquals($cookie, $server->getCookieParams());
         $this->assertEquals($post, $server->getParsedBody());

@@ -8,6 +8,7 @@ use Interop\Http\Factory\StreamFactoryInterface;
 use Interop\Http\Factory\UploadedFileFactoryInterface;
 use Interop\Http\Factory\UriFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Interop\Http\Factory\ServerRequestFactoryInterface;
 use Psr\Http\Message\UriInterface;
@@ -51,7 +52,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
     /**
      * {@inheritdoc}
      */
-    public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], array $post = [], array $files = []): ServerRequestInterface
+    public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], array $post = [], array $files = [], $body = null): ServerRequestInterface
     {
         $method = $this->getMethodFromEnv($server);
         $uri = $this->getUriFromEnvWithHTTP($server);
@@ -62,12 +63,27 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
             $serverRequest = $serverRequest->withAddedHeader($name, $value);
         }
 
-        return $serverRequest
+        $serverRequest = $serverRequest
             ->withProtocolVersion($protocol)
             ->withCookieParams($cookie)
             ->withQueryParams($get)
             ->withParsedBody($post)
             ->withUploadedFiles($this->normalizeFiles($files));
+
+
+        if (null === $body) {
+            return $serverRequest;
+        }
+
+        if (is_resource($body)) {
+            $body = $this->streamFactory->createStreamFromResource($body);
+        } elseif (is_string($body)) {
+            $body = $this->streamFactory->createStream($body);
+        } elseif (!$body instanceof StreamInterface) {
+            throw new \InvalidArgumentException('The $body parameter to ServerRequestCreator::fromArrays must be string, resource or StreamInterface');
+        }
+
+        return $serverRequest->withBody($body);
     }
 
     /**

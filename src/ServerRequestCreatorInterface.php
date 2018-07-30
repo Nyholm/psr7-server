@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nyholm\Psr7Server;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 
 interface ServerRequestCreatorInterface
 {
@@ -26,6 +27,7 @@ interface ServerRequestCreatorInterface
      * @param array $get     Typically $_GET or similar structure.
      * @param array $post    Typically $_POST or similar structure.
      * @param array $files   Typically $_FILES or similar structure.
+     * @param StreamInterface|resource|string|null $body Typically stdIn
      *
      * @throws \InvalidArgumentException If no valid method or URI can be determined.
      */
@@ -35,7 +37,8 @@ interface ServerRequestCreatorInterface
         array $cookie = [],
         array $get = [],
         array $post = [],
-        array $files = []
+        array $files = [],
+        $body = null
     ): ServerRequestInterface;
 
     /**
