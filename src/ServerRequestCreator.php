@@ -70,6 +70,41 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
             ->withUploadedFiles($this->normalizeFiles($files));
     }
 
+    /**
+     * Implementation from Zend\Diactoros\marshalHeadersFromSapi()
+     */
+    public function getHeadersFromServer(array $server): array
+    {
+        $headers = [];
+        foreach ($server as $key => $value) {
+            // Apache prefixes environment variables with REDIRECT_
+            // if they are added by rewrite rules
+            if (strpos($key, 'REDIRECT_') === 0) {
+                $key = substr($key, 9);
+
+                // We will not overwrite existing variables with the
+                // prefixed versions, though
+                if (array_key_exists($key, $server)) {
+                    continue;
+                }
+            }
+
+            if ($value && strpos($key, 'HTTP_') === 0) {
+                $name = strtr(strtolower(substr($key, 5)), '_', '-');
+                $headers[$name] = $value;
+                continue;
+            }
+
+            if ($value && strpos($key, 'CONTENT_') === 0) {
+                $name = 'content-' . strtolower(substr($key, 8));
+                $headers[$name] = $value;
+                continue;
+            }
+        }
+
+        return $headers;
+    }
+
     private function getMethodFromEnv(array $environment): string
     {
         if (false === isset($environment['REQUEST_METHOD'])) {

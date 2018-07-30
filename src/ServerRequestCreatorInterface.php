@@ -37,4 +37,12 @@ interface ServerRequestCreatorInterface
         array $post = [],
         array $files = []
     ): ServerRequestInterface;
+
+    /**
+     * Get parsed headers from ($_SERVER) array.
+     *
+     * @param array $server  Typically $_SERVER or similar structure.
+     * @return array
+     */
+    public function getHeadersFromServer(array $server): array;
 }
