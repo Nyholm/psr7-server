@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Nyholm\Psr7Server;
 
-use Psr\Http\Factory\StreamFactoryInterface;
-use Psr\Http\Factory\UploadedFileFactoryInterface;
-use Psr\Http\Factory\UriFactoryInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use Psr\Http\Factory\ServerRequestFactoryInterface;
+use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 
 class ServerRequestCreator implements ServerRequestCreatorInterface
