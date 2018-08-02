@@ -7,6 +7,10 @@ namespace Nyholm\Psr7Server;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
+/**
+ * @author Tobias Nyholm <tobias.nyholm@gmail.com>
+ * @author Martijn van der Ven <martijn@vanderven.se>
+ */
 interface ServerRequestCreatorInterface
 {
     /**

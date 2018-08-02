@@ -13,6 +13,10 @@ use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 
+/**
+ * @author Tobias Nyholm <tobias.nyholm@gmail.com>
+ * @author Martijn van der Ven <martijn@vanderven.se>
+ */
 class ServerRequestCreator implements ServerRequestCreatorInterface
 {
     private $serverRequestFactory;
