@@ -44,7 +44,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
         if (false === isset($server['REQUEST_METHOD'])) {
             $server['REQUEST_METHOD'] = 'GET';
         }
-        $headers = function_exists('getallheaders') ? getallheaders() : [];
+        $headers = \function_exists('getallheaders') ? getallheaders() : [];
 
         return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES);
     }
@@ -56,7 +56,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
     {
         $method = $this->getMethodFromEnv($server);
         $uri = $this->getUriFromEnvWithHTTP($server);
-        $protocol = isset($server['SERVER_PROTOCOL']) ? str_replace('HTTP/', '', $server['SERVER_PROTOCOL']) : '1.1';
+        $protocol = isset($server['SERVER_PROTOCOL']) ? \str_replace('HTTP/', '', $server['SERVER_PROTOCOL']) : '1.1';
 
         $serverRequest = $this->serverRequestFactory->createServerRequest($method, $uri, $server);
         foreach ($headers as $name => $value) {
@@ -74,9 +74,9 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
             return $serverRequest;
         }
 
-        if (is_resource($body)) {
+        if (\is_resource($body)) {
             $body = $this->streamFactory->createStreamFromResource($body);
-        } elseif (is_string($body)) {
+        } elseif (\is_string($body)) {
             $body = $this->streamFactory->createStream($body);
         } elseif (!$body instanceof StreamInterface) {
             throw new \InvalidArgumentException('The $body parameter to ServerRequestCreator::fromArrays must be string, resource or StreamInterface');
@@ -94,25 +94,25 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
         foreach ($server as $key => $value) {
             // Apache prefixes environment variables with REDIRECT_
             // if they are added by rewrite rules
-            if (0 === strpos($key, 'REDIRECT_')) {
-                $key = substr($key, 9);
+            if (0 === \strpos($key, 'REDIRECT_')) {
+                $key = \substr($key, 9);
 
                 // We will not overwrite existing variables with the
                 // prefixed versions, though
-                if (array_key_exists($key, $server)) {
+                if (\array_key_exists($key, $server)) {
                     continue;
                 }
             }
 
-            if ($value && 0 === strpos($key, 'HTTP_')) {
-                $name = strtr(strtolower(substr($key, 5)), '_', '-');
+            if ($value && 0 === \strpos($key, 'HTTP_')) {
+                $name = \strtr(\strtolower(\substr($key, 5)), '_', '-');
                 $headers[$name] = $value;
 
                 continue;
             }
 
-            if ($value && 0 === strpos($key, 'CONTENT_')) {
-                $name = 'content-'.strtolower(substr($key, 8));
+            if ($value && 0 === \strpos($key, 'CONTENT_')) {
+                $name = 'content-'.\strtolower(\substr($key, 8));
                 $headers[$name] = $value;
 
                 continue;
@@ -157,9 +157,9 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
         foreach ($files as $key => $value) {
             if ($value instanceof UploadedFileInterface) {
                 $normalized[$key] = $value;
-            } elseif (is_array($value) && isset($value['tmp_name'])) {
+            } elseif (\is_array($value) && isset($value['tmp_name'])) {
                 $normalized[$key] = $this->createUploadedFileFromSpec($value);
-            } elseif (is_array($value)) {
+            } elseif (\is_array($value)) {
                 $normalized[$key] = $this->normalizeFiles($value);
             } else {
                 throw new \InvalidArgumentException('Invalid value in files specification');
@@ -181,7 +181,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
      */
     private function createUploadedFileFromSpec(array $value)
     {
-        if (is_array($value['tmp_name'])) {
+        if (\is_array($value['tmp_name'])) {
             return $this->normalizeNestedFileSpec($value);
         }
 
@@ -208,7 +208,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
     {
         $normalizedFiles = [];
 
-        foreach (array_keys($files['tmp_name']) as $key) {
+        foreach (\array_keys($files['tmp_name']) as $key) {
             $spec = [
                 'tmp_name' => $files['tmp_name'][$key],
                 'size' => $files['size'][$key],
@@ -225,7 +225,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
     /**
      * Create a new uri from server variable.
      *
-     * @param array $server Typically $_SERVER or similar structure.
+     * @param array $server typically $_SERVER or similar structure
      */
     private function createUriFromArray(array $server): UriInterface
     {
@@ -248,7 +248,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
         }
 
         if (isset($server['REQUEST_URI'])) {
-            $uri = $uri->withPath(current(explode('?', $server['REQUEST_URI'])));
+            $uri = $uri->withPath(\current(\explode('?', $server['REQUEST_URI'])));
         }
 
         if (isset($server['QUERY_STRING'])) {
