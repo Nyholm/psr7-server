@@ -44,7 +44,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
         if (false === isset($server['REQUEST_METHOD'])) {
             $server['REQUEST_METHOD'] = 'GET';
         }
-        $headers = function_exists('getallheaders') ? getallheaders() : [];
+        $headers = function_exists('getallheaders') ? getallheaders() : static::getHeadersFromServer($_SERVER);
 
         return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES);
     }
