@@ -13,6 +13,7 @@ interface ServerRequestCreatorInterface
      * Create a new server request from the current environment variables.
      * Defaults to a GET request to minimise the risk of an \InvalidArgumentException.
      * Includes the current request headers as supplied by the server through `getallheaders()`.
+     * If `getallheaders()` is unavailable on the current server it will fallback to its own `getHeadersFromServer()` method.
      *
      * @throws \InvalidArgumentException If no valid method or URI can be determined.
      */
