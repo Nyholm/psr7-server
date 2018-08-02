@@ -42,10 +42,9 @@ class ServerRequestCreatorTest extends TestCase
     {
         parent::setUp();
         $psr17Factory = new \Nyholm\Psr7\Factory\Psr17Factory();
-        $serverRequestFactory = new \Nyholm\Psr7\Factory\ServerRequestFactory();
 
         $this->creator = new ServerRequestCreator(
-            $serverRequestFactory,
+            $psr17Factory,
             $psr17Factory,
             $psr17Factory,
             $psr17Factory
