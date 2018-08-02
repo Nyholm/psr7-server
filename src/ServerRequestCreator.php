@@ -13,6 +13,10 @@ use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 
+/**
+ * @author Tobias Nyholm <tobias.nyholm@gmail.com>
+ * @author Martijn van der Ven <martijn@vanderven.se>
+ */
 class ServerRequestCreator implements ServerRequestCreatorInterface
 {
     private $serverRequestFactory;
@@ -44,9 +48,10 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
         if (false === isset($server['REQUEST_METHOD'])) {
             $server['REQUEST_METHOD'] = 'GET';
         }
-        $headers = \function_exists('getallheaders') ? getallheaders() : [];
 
-        return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES);
+        $headers = \function_exists('getallheaders') ? getallheaders() : static::getHeadersFromServer($_SERVER);
+
+        return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES, fopen('php://input', 'r') ?: null);
     }
 
     /**
@@ -88,7 +93,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
     /**
      * Implementation from Zend\Diactoros\marshalHeadersFromSapi().
      */
-    public function getHeadersFromServer(array $server): array
+    public static function getHeadersFromServer(array $server): array
     {
         $headers = [];
         foreach ($server as $key => $value) {

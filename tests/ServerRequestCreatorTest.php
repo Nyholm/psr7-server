@@ -499,7 +499,7 @@ class ServerRequestCreatorTest extends TestCase
             'content-length' => 'UNSPECIFIED',
         ];
 
-        $this->assertSame($expected, $this->creator->getHeadersFromServer($server));
+        $this->assertSame($expected, ServerRequestCreator::getHeadersFromServer($server));
     }
 
     /**
@@ -519,6 +519,6 @@ class ServerRequestCreatorTest extends TestCase
             'x-foo-bar' => 'nonprefixed',
         ];
 
-        $this->assertEquals($expected, $this->creator->getHeadersFromServer($server));
+        $this->assertEquals($expected, ServerRequestCreator::getHeadersFromServer($server));
     }
 }

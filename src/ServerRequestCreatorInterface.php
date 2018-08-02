@@ -7,12 +7,18 @@ namespace Nyholm\Psr7Server;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
+/**
+ * @author Tobias Nyholm <tobias.nyholm@gmail.com>
+ * @author Martijn van der Ven <martijn@vanderven.se>
+ */
 interface ServerRequestCreatorInterface
 {
     /**
      * Create a new server request from the current environment variables.
      * Defaults to a GET request to minimise the risk of an \InvalidArgumentException.
      * Includes the current request headers as supplied by the server through `getallheaders()`.
+     * If `getallheaders()` is unavailable on the current server it will fallback to its own `getHeadersFromServer()` method.
+     * Defaults to php://input for the request body.
      *
      * @throws \InvalidArgumentException if no valid method or URI can be determined
      */
@@ -48,5 +54,5 @@ interface ServerRequestCreatorInterface
      *
      * @return array
      */
-    public function getHeadersFromServer(array $server): array;
+    public static function getHeadersFromServer(array $server): array;
 }
