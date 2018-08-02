@@ -48,5 +48,5 @@ interface ServerRequestCreatorInterface
      *
      * @return array
      */
-    public function getHeadersFromServer(array $server): array;
+    public static function getHeadersFromServer(array $server): array;
 }

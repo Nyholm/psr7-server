@@ -88,7 +88,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
     /**
      * Implementation from Zend\Diactoros\marshalHeadersFromSapi().
      */
-    public function getHeadersFromServer(array $server): array
+    public static function getHeadersFromServer(array $server): array
     {
         $headers = [];
         foreach ($server as $key => $value) {
