@@ -50,7 +50,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
         }
         $headers = function_exists('getallheaders') ? getallheaders() : static::getHeadersFromServer($_SERVER);
 
-        return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES);
+        return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES, fopen('php://input', 'r') ?: null);
     }
 
     /**
