@@ -20,22 +20,22 @@ interface ServerRequestCreatorInterface
      * If `getallheaders()` is unavailable on the current server it will fallback to its own `getHeadersFromServer()` method.
      * Defaults to php://input for the request body.
      *
-     * @throws \InvalidArgumentException If no valid method or URI can be determined.
+     * @throws \InvalidArgumentException if no valid method or URI can be determined
      */
     public function fromGlobals(): ServerRequestInterface;
 
     /**
      * Create a new server request from a set of arrays.
      *
-     * @param array                                $server  Typically $_SERVER or similar structure.
-     * @param array                                $headers Typically the output of getallheaders() or similar structure.
-     * @param array                                $cookie  Typically $_COOKIE or similar structure.
-     * @param array                                $get     Typically $_GET or similar structure.
-     * @param array                                $post    Typically $_POST or similar structure.
-     * @param array                                $files   Typically $_FILES or similar structure.
+     * @param array                                $server  typically $_SERVER or similar structure
+     * @param array                                $headers typically the output of getallheaders() or similar structure
+     * @param array                                $cookie  typically $_COOKIE or similar structure
+     * @param array                                $get     typically $_GET or similar structure
+     * @param array                                $post    typically $_POST or similar structure
+     * @param array                                $files   typically $_FILES or similar structure
      * @param StreamInterface|resource|string|null $body    Typically stdIn
      *
-     * @throws \InvalidArgumentException If no valid method or URI can be determined.
+     * @throws \InvalidArgumentException if no valid method or URI can be determined
      */
     public function fromArrays(
         array $server,
@@ -50,7 +50,7 @@ interface ServerRequestCreatorInterface
     /**
      * Get parsed headers from ($_SERVER) array.
      *
-     * @param array $server Typically $_SERVER or similar structure.
+     * @param array $server typically $_SERVER or similar structure
      *
      * @return array
      */
