@@ -17,7 +17,7 @@ use Psr\Http\Message\UriInterface;
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  * @author Martijn van der Ven <martijn@vanderven.se>
  */
-class ServerRequestCreator implements ServerRequestCreatorInterface
+final class ServerRequestCreator implements ServerRequestCreatorInterface
 {
     private $serverRequestFactory;
 
