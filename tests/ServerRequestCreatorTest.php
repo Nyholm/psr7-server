@@ -9,6 +9,7 @@ use Nyholm\Psr7\UploadedFile;
 use Nyholm\Psr7\Uri;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
 class ServerRequestCreatorTest extends TestCase
@@ -520,5 +521,43 @@ class ServerRequestCreatorTest extends TestCase
         ];
 
         $this->assertEquals($expected, ServerRequestCreator::getHeadersFromServer($server));
+    }
+
+    /**
+     * Test the fallback for a failing StreamFactoryInterface::createStreamFromFile.
+     */
+    public function testFailingStreamFromFile()
+    {
+        $psr17Factory = new \Nyholm\Psr7\Factory\Psr17Factory();
+        $psr17StreamFactory = $this->createMock(StreamFactoryInterface::class);
+        $psr17StreamFactory->method('createStreamFromFile')
+            ->will($this->throwException(new \RuntimeException()));
+        $psr17StreamFactory->method('createStream')
+            ->will($this->returnCallback([$psr17Factory, 'createStream']));
+        $creator = new ServerRequestCreator(
+            $psr17Factory,
+            $psr17Factory,
+            $psr17Factory,
+            $psr17StreamFactory
+        );
+        $expected = new UploadedFile(
+            '',
+            0,
+            \UPLOAD_ERR_CANT_WRITE,
+            'MyFile.txt',
+            'text/plain'
+        );
+        $created = NSA::invokeMethod(
+            $creator,
+            'createUploadedFileFromSpec',
+            [
+                'name' => 'MyFile.txt',
+                'type' => 'text/plain',
+                'tmp_name' => '',
+                'error' => \UPLOAD_ERR_CANT_WRITE,
+                'size' => 0,
+            ]
+        );
+        $this->assertEquals($expected, $created);
     }
 }

@@ -190,8 +190,14 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
             return $this->normalizeNestedFileSpec($value);
         }
 
+        try {
+            $stream = $this->streamFactory->createStreamFromFile($value['tmp_name']);
+        } catch (\RuntimeException $e) {
+            $stream = $this->streamFactory->createStream();
+        }
+
         return $this->uploadedFileFactory->createUploadedFile(
-            $this->streamFactory->createStreamFromFile($value['tmp_name']),
+            $stream,
             (int) $value['size'],
             (int) $value['error'],
             $value['name'],
