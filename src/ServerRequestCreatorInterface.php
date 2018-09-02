@@ -34,7 +34,7 @@ interface ServerRequestCreatorInterface
      * @param array                                $post    typically $_POST or similar structure
      * @param array                                $files   typically $_FILES or similar structure
      * @param StreamInterface|resource|string|null $body    Typically stdIn
-     *
+     * @return ServerRequestInterface
      * @throws \InvalidArgumentException if no valid method or URI can be determined
      */
     public function fromArrays(
