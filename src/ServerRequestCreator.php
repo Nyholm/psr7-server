@@ -92,6 +92,8 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
 
     /**
      * Implementation from Zend\Diactoros\marshalHeadersFromSapi().
+     * @param array $server
+	 * @return array
      */
     public static function getHeadersFromServer(array $server): array
     {
@@ -237,6 +239,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
      * Create a new uri from server variable.
      *
      * @param array $server typically $_SERVER or similar structure
+     * @return UriInterface
      */
     private function createUriFromArray(array $server): UriInterface
     {
