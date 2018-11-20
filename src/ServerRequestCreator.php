@@ -248,14 +248,18 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
             $uri = $uri->withScheme('on' === $server['HTTPS'] ? 'https' : 'http');
         }
 
-        if (isset($server['HTTP_HOST'])) {
-            $uri = $uri->withHost($server['HTTP_HOST']);
-        } elseif (isset($server['SERVER_NAME'])) {
-            $uri = $uri->withHost($server['SERVER_NAME']);
-        }
-
         if (isset($server['SERVER_PORT'])) {
             $uri = $uri->withPort($server['SERVER_PORT']);
+        }
+
+        if (isset($server['HTTP_HOST'])) {
+            if (preg_match('/^([^\:]+)\:(\d+)$/', $server['HTTP_HOST'], $matches) === 1) {
+                $uri = $uri->withHost($matches[1])->withPort($matches[2]);
+            } else {
+                $uri = $uri->withHost($server['HTTP_HOST']);
+            }
+        } elseif (isset($server['SERVER_NAME'])) {
+            $uri = $uri->withHost($server['SERVER_NAME']);
         }
 
         if (isset($server['REQUEST_URI'])) {

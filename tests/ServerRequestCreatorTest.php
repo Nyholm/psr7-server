@@ -458,7 +458,7 @@ class ServerRequestCreatorTest extends TestCase
             ],
             'Different port' => [
                 'http://www.blakesimpson.co.uk:8324/blog/article.php?id=10&user=foo',
-                array_merge($server, ['SERVER_PORT' => '8324']),
+                array_merge($server, ['SERVER_PORT' => '8324', 'HTTP_HOST' => $server['HTTP_HOST'].':8324']),
             ],
             'Empty server variable' => [
                 '',
