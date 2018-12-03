@@ -253,7 +253,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
         }
 
         if (isset($server['HTTP_HOST'])) {
-            if (preg_match('/^([^\:]+)\:(\d+)$/', $server['HTTP_HOST'], $matches) === 1) {
+            if (preg_match('/^(.+)\:(\d+)$/', $server['HTTP_HOST'], $matches) === 1) {
                 $uri = $uri->withHost($matches[1])->withPort($matches[2]);
             } else {
                 $uri = $uri->withHost($server['HTTP_HOST']);
