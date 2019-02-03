@@ -51,7 +51,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
 
         $headers = \function_exists('getallheaders') ? getallheaders() : static::getHeadersFromServer($_SERVER);
 
-        return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES, fopen('php://input', 'r') ?: null);
+        return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES, \fopen('php://input', 'r') ?: null);
     }
 
     /**
@@ -253,7 +253,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
         }
 
         if (isset($server['HTTP_HOST'])) {
-            if (preg_match('/^(.+)\:(\d+)$/', $server['HTTP_HOST'], $matches) === 1) {
+            if (1 === \preg_match('/^(.+)\:(\d+)$/', $server['HTTP_HOST'], $matches)) {
                 $uri = $uri->withHost($matches[1])->withPort($matches[2]);
             } else {
                 $uri = $uri->withHost($server['HTTP_HOST']);
