@@ -51,13 +51,18 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
 
         $headers = \function_exists('getallheaders') ? getallheaders() : static::getHeadersFromServer($_SERVER);
 
-        return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES, \fopen('php://input', 'r') ?: null);
+        $post = null;
+        if ('POST' === $this->getMethodFromEnv($server) && \in_array($headers['content-type'], ['application/x-www-form-urlencoded', 'multipart/form-data'])) {
+            $post = $_POST;
+        }
+
+        return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $post, $_FILES, \fopen('php://input', 'r') ?: null);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], array $post = [], array $files = [], $body = null): ServerRequestInterface
+    public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], array $post = null, array $files = [], $body = null): ServerRequestInterface
     {
         $method = $this->getMethodFromEnv($server);
         $uri = $this->getUriFromEnvWithHTTP($server);
