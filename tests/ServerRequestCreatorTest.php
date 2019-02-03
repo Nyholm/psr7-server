@@ -458,7 +458,19 @@ class ServerRequestCreatorTest extends TestCase
             ],
             'Different port' => [
                 'http://www.blakesimpson.co.uk:8324/blog/article.php?id=10&user=foo',
-                array_merge($server, ['SERVER_PORT' => '8324']),
+                array_merge($server, ['SERVER_PORT' => '8324', 'HTTP_HOST' => $server['HTTP_HOST'].':8324']),
+            ],
+            'IPv4' => [
+                'http://127.0.0.1/blog/article.php?id=10&user=foo',
+                array_merge($server, ['SERVER_PORT' => '80', 'HTTP_HOST' => '127.0.0.1']),
+            ],
+            'IPv4 with port' => [
+                'http://127.0.0.1:8324/blog/article.php?id=10&user=foo',
+                array_merge($server, ['SERVER_PORT' => '8324', 'HTTP_HOST' => '127.0.0.1:8324']),
+            ],
+            'IPv6 with port' => [
+                'http://::1:8324/blog/article.php?id=10&user=foo',
+                array_merge($server, ['SERVER_PORT' => '8324', 'HTTP_HOST' => '::1:8324']),
             ],
             'Empty server variable' => [
                 '',
