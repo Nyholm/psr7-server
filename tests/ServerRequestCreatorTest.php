@@ -448,6 +448,10 @@ class ServerRequestCreatorTest extends TestCase
                 'https://www.blakesimpson.co.uk/blog/article.php?id=10&user=foo',
                 array_merge($server, ['HTTPS' => 'on', 'SERVER_PORT' => '443']),
             ],
+            'Secure request via proxy' => [
+                'https://www.blakesimpson.co.uk/blog/article.php?id=10&user=foo',
+                array_merge($server, ['HTTP_X_FORWARDED_PROTO' => 'https', 'SERVER_PORT' => '80']),
+            ],
             'HTTP_HOST missing' => [
                 'http://www.blakesimpson.co.uk/blog/article.php?id=10&user=foo',
                 array_merge($server, ['HTTP_HOST' => null]),

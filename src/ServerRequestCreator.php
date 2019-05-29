@@ -242,35 +242,18 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     {
         $uri = $this->uriFactory->createUri('');
 
-        $keys = [
-            'HTTP_X_FORWARDED_PROTO' => 'http',
-            'HTTP_X_FORWARDED_PROTOCOL' => 'http',
-            'HTTP_X_FORWARDED_SSL' => 'off',
-            'HTTP_FRONT_END_HTTPS' => 'off',
-            'HTTP_X_URL_SCHEME' => 'http',
-            'HTTPS' => 'off',
-            'REQUEST_SCHEME' => 'http',
-        ];
-
-        $scheme = null;
-        if ([] !== $keys = \array_intersect_key($keys, $server)) {
-            $scheme = 'http';
-        }
-
-        foreach ($keys as $index => $value) {
-            if ($value !== $server[$index]) {
-                $scheme = 'https';
-
-                break;
+        if (isset($server['HTTP_X_FORWARDED_PROTO'])) {
+            $uri = $uri->withScheme($server['HTTP_X_FORWARDED_PROTO']);
+        } else {
+            if (isset($server['REQUEST_SCHEME'])) {
+                $uri = $uri->withScheme($server['REQUEST_SCHEME']);
+            } elseif (isset($server['HTTPS'])) {
+                $uri = $uri->withScheme('on' === $server['HTTPS'] ? 'https' : 'http');
             }
-        }
 
-        if (null !== $scheme) {
-            $uri = $uri->withScheme($scheme);
-        }
-
-        if (isset($server['SERVER_PORT'])) {
-            $uri = $uri->withPort($server['SERVER_PORT']);
+            if (isset($server['SERVER_PORT'])) {
+                $uri = $uri->withPort($server['SERVER_PORT']);
+            }
         }
 
         if (isset($server['HTTP_HOST'])) {
