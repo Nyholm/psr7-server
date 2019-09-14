@@ -52,8 +52,19 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
         $headers = \function_exists('getallheaders') ? getallheaders() : static::getHeadersFromServer($_SERVER);
 
         $post = null;
-        if ('POST' === $this->getMethodFromEnv($server) && \in_array($headers['content-type'], ['application/x-www-form-urlencoded', 'multipart/form-data'])) {
-            $post = $_POST;
+        if ('POST' === $this->getMethodFromEnv($server)) {
+            foreach ($headers as $headerName => $headerValue) {
+                if ('content-type' !== \strtolower($headerName)) {
+                    continue;
+                }
+                if (\in_array(
+                    \strtolower(\trim(\explode(';', $headerValue, 2)[0])),
+                    ['application/x-www-form-urlencoded', 'multipart/form-data']
+                )) {
+                    $post = $_POST;
+                    break;
+                }
+            }
         }
 
         return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $post, $_FILES, \fopen('php://input', 'r') ?: null);
