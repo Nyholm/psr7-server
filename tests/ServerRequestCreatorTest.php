@@ -476,6 +476,14 @@ class ServerRequestCreatorTest extends TestCase
                 '',
                 [],
             ],
+            'Request going through a proxy server' => [
+                'https://www.blakesimpson.co.uk:80/blog/article.php?id=10&user=foo',
+                array_merge($server, ['HTTP_X_FORWARDED_PROTO' => 'https']),
+            ],
+            'Request with no relevant information about the protocol in use' => [
+                'http://www.blakesimpson.co.uk/blog/article.php?id=10&user=foo',
+                array_diff_key($server, ['HTTP_X_FORWARDED_PROTO', 'HTTP_X_FORWARDED_PROTOCOL', 'HTTP_X_FORWARDED_SSL', 'HTTP_FRONT_END_HTTPS', 'HTTP_X_URL_SCHEME', 'HTTPS', 'REQUEST_SCHEME']),
+            ],
         ];
     }
 
