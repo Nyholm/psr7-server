@@ -242,28 +242,16 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     {
         $uri = $this->uriFactory->createUri('');
 
-        if (isset($server['HTTP_X_FORWARDED_PROTO'])) {
-            $uri = $uri->withScheme($server['HTTP_X_FORWARDED_PROTO']);
-        } else {
-            if (isset($server['REQUEST_SCHEME'])) {
-                $uri = $uri->withScheme($server['REQUEST_SCHEME']);
-            } elseif (isset($server['HTTPS'])) {
-                $uri = $uri->withScheme('on' === $server['HTTPS'] ? 'https' : 'http');
-            }
-
-            if (isset($server['SERVER_PORT'])) {
-                $uri = $uri->withPort($server['SERVER_PORT']);
-            }
+        if (isset($server['SERVER_NAME'])) {
+            $uri = $uri->withHost($server['SERVER_NAME']);
         }
 
         if (isset($server['HTTP_HOST'])) {
+            $uri = $uri->withHost($server['HTTP_HOST']);
+
             if (1 === \preg_match('/^(.+)\:(\d+)$/', $server['HTTP_HOST'], $matches)) {
                 $uri = $uri->withHost($matches[1])->withPort($matches[2]);
-            } else {
-                $uri = $uri->withHost($server['HTTP_HOST']);
             }
-        } elseif (isset($server['SERVER_NAME'])) {
-            $uri = $uri->withHost($server['SERVER_NAME']);
         }
 
         if (isset($server['REQUEST_URI'])) {
@@ -272,6 +260,24 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
 
         if (isset($server['QUERY_STRING'])) {
             $uri = $uri->withQuery($server['QUERY_STRING']);
+        }
+
+        if ('' !== $uri->getHost()) {
+            $uri = $uri->withScheme('http');
+
+            if (isset($server['REQUEST_SCHEME'])) {
+                $uri = $uri->withScheme($server['REQUEST_SCHEME']);
+            } elseif (isset($server['HTTPS']) && !empty($server['HTTPS'])) {
+                $uri = $uri->withScheme('https');
+            }
+
+            if (isset($server['HTTP_X_FORWARDED_PROTO'])) {
+                $uri = $uri->withScheme($server['HTTP_X_FORWARDED_PROTO']);
+            }
+        }
+
+        if (isset($server['SERVER_PORT'])) {
+            $uri = $uri->withPort($server['SERVER_PORT']);
         }
 
         return $uri;
