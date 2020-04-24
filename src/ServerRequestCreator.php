@@ -65,6 +65,11 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
 
         $serverRequest = $this->serverRequestFactory->createServerRequest($method, $uri, $server);
         foreach ($headers as $name => $value) {
+            // Because PHP automatically casts array keys set with numeric strings to integers, we have to make sure
+            // that numeric headers will not be sent along as integers, as withAddedHeader can only accept strings.
+            if (\is_int($name)) {
+                $name = (string) $name;
+            }
             $serverRequest = $serverRequest->withAddedHeader($name, $value);
         }
 

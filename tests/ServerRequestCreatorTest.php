@@ -323,6 +323,16 @@ class ServerRequestCreatorTest extends TestCase
         $this->creator->fromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], ['test' => 'something']);
     }
 
+    public function testNumericHeaderFromHeaderArray()
+    {
+        $server = [
+            'REQUEST_METHOD' => 'GET',
+        ];
+
+        $server = $this->creator->fromArrays($server, ['1234' => 'NumericHeader']);
+        $this->assertEquals(['1234' => ['NumericHeader']], $server->getHeaders());
+    }
+
     public function testFromArrays()
     {
         $server = [
@@ -336,6 +346,8 @@ class ServerRequestCreatorTest extends TestCase
             'REQUEST_TIME' => 'Request start time: 1280149029',
             'QUERY_STRING' => 'id=10&user=foo',
             'DOCUMENT_ROOT' => '/path/to/your/server/root/',
+            'HTTP_0' => 'NumericHeaderZero',
+            'HTTP_1234' => 'NumericHeader',
             'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'HTTP_ACCEPT_CHARSET' => 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
             'HTTP_ACCEPT_ENCODING' => 'gzip,deflate',
@@ -419,6 +431,8 @@ class ServerRequestCreatorTest extends TestCase
             'REQUEST_TIME' => 'Request start time: 1280149029',
             'QUERY_STRING' => 'id=10&user=foo',
             'DOCUMENT_ROOT' => '/path/to/your/server/root/',
+            'HTTP_0' => 'NumericHeaderZero',
+            'HTTP_1234' => 'NumericHeader',
             'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'HTTP_ACCEPT_CHARSET' => 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
             'HTTP_ACCEPT_ENCODING' => 'gzip,deflate',
@@ -497,6 +511,8 @@ class ServerRequestCreatorTest extends TestCase
     public function testMarshalsExpectedHeadersFromServerArray()
     {
         $server = [
+            'HTTP_0' => 'NumericHeaderZero',
+            'HTTP_1234' => 'NumericHeader',
             'HTTP_COOKIE' => 'COOKIE',
             'HTTP_AUTHORIZATION' => 'token',
             'HTTP_CONTENT_TYPE' => 'application/json',
@@ -507,6 +523,8 @@ class ServerRequestCreatorTest extends TestCase
         ];
 
         $expected = [
+            '0' => 'NumericHeaderZero',
+            '1234' => 'NumericHeader',
             'cookie' => 'COOKIE',
             'authorization' => 'token',
             'content-type' => 'application/json',
