@@ -42,7 +42,7 @@ interface ServerRequestCreatorInterface
         array $headers = [],
         array $cookie = [],
         array $get = [],
-        array $post = null,
+        ?array $post = null,
         array $files = [],
         $body = null
     ): ServerRequestInterface;
