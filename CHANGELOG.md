@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 1.0.0
+
+No changes since 0.4.2
+
 ## 0.4.2
 
 ### Fixed
