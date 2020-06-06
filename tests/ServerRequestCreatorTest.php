@@ -594,4 +594,57 @@ class ServerRequestCreatorTest extends TestCase
         );
         $this->assertEquals($expected, $created);
     }
+
+    public function testNoParsedBodyWithoutPOSTMethod()
+    {
+        $_POST = ['a' => 'b', 'c' => 'd'];
+        $instance = $this->creator->fromGlobals();
+        $this->assertNull($instance->getParsedBody());
+    }
+
+    public function testNoParsedBodyWithPOSTMethodWithoutContentType()
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_POST = ['a' => 'b', 'c' => 'd'];
+        $instance = $this->creator->fromGlobals();
+        $this->assertNull($instance->getParsedBody());
+    }
+
+    /**
+     * @dataProvider dataContentTypesThatTriggerParsedBody
+     */
+    public function testParsedBodyWithPOSTMethodDifferentContentType($parsedBody, $contentType)
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['HTTP_CONTENT_TYPE'] = $contentType;
+        $_POST = ['a' => 'b', 'c' => 'd'];
+        $instance = $this->creator->fromGlobals();
+        $this->assertSame($parsedBody ? $_POST : null, $instance->getParsedBody());
+    }
+
+    public function dataContentTypesThatTriggerParsedBody()
+    {
+        return [
+            // Acceptable values
+            'Standard HTML Form' => [
+                true, 'application/x-www-form-urlencoded',
+            ],
+            'HTML Form with MIME body' => [
+                true, 'multipart/form-data',
+            ],
+            'Standard HTML Form, mixed case MIME' => [
+                true, 'appLication/x-WWW-form-URLEncoded',
+            ],
+            'Standard HTML Form, surrounding whitespace' => [
+                true, '  application/x-www-form-urlencoded ',
+            ],
+            'Standard HTML Form, with flags' => [
+                true, 'application/x-www-form-urlencoded;charset=utf-8',
+            ],
+            // Nonacceptable values
+            'JSON is not parsed by PHP' => [
+                false, 'application/json',
+            ],
+        ];
+    }
 }
