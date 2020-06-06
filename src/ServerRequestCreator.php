@@ -216,8 +216,6 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
      * Loops through all nested files and returns a normalized array of
      * UploadedFileInterface instances.
      *
-     * @param array $files
-     *
      * @return UploadedFileInterface[]
      */
     private function normalizeNestedFileSpec(array $files = []): array
@@ -242,8 +240,6 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
      * Create a new uri from server variable.
      *
      * @param array $server typically $_SERVER or similar structure
-     *
-     * @return UriInterface
      */
     private function createUriFromArray(array $server): UriInterface
     {
