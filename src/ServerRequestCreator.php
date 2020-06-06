@@ -62,6 +62,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
                     ['application/x-www-form-urlencoded', 'multipart/form-data']
                 )) {
                     $post = $_POST;
+
                     break;
                 }
             }
