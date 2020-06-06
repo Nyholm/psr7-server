@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## 1.0.0
 
-No changes since 0.4.2
+- Changed signature of `ServerRequestCreatorInterface::fromArrays()` to allow null values for $post
 
 ## 0.4.2
 
