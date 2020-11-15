@@ -33,13 +33,13 @@ class ServerRequestCreatorTest extends TestCase
         }
     }
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
         self::initFiles();
     }
 
-    protected function setUp()/* The :void return type declaration that should be here would cause a BC issue */
+    protected function setUp(): void
     {
         parent::setUp();
         $psr17Factory = new \Nyholm\Psr7\Factory\Psr17Factory();
