@@ -113,7 +113,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     }
 
     /**
-     * Implementation from Zend\Diactoros\marshalHeadersFromSapi().
+     * Implementation from Laminas\Diactoros\marshalHeadersFromSapi().
      */
     public static function getHeadersFromServer(array $server): array
     {

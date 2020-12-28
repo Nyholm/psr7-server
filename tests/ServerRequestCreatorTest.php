@@ -506,7 +506,7 @@ class ServerRequestCreatorTest extends TestCase
     }
 
     /**
-     * Test from zendframework/zend-diactoros.
+     * Test from laminas/laminas-diactoros (formerly zendframework/zend-diactoros).
      */
     public function testMarshalsExpectedHeadersFromServerArray()
     {
@@ -538,7 +538,7 @@ class ServerRequestCreatorTest extends TestCase
     }
 
     /**
-     * Test from zendframework/zend-diactoros.
+     * Test from laminas/laminas-diactoros (formerly zendframework/zend-diactoros).
      */
     public function testMarshalsVariablesPrefixedByApacheFromServerArray()
     {
