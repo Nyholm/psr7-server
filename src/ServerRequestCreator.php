@@ -212,7 +212,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
             return $this->normalizeNestedFileSpec($value);
         }
 
-        if ( UPLOAD_ERR_OK === $value['error'] ) {
+        if (UPLOAD_ERR_OK === $value['error']) {
             $stream = $this->streamFactory->createStreamFromFile($value['tmp_name']);
         } else {
             $stream = $this->streamFactory->createStream();
