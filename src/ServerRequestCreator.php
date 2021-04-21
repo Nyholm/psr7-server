@@ -217,7 +217,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
         } else {
             $stream = $this->streamFactory->createStream();
         }
-        
+
         return $this->uploadedFileFactory->createUploadedFile(
             $stream,
             (int) $value['size'],
