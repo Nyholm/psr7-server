@@ -212,12 +212,12 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
             return $this->normalizeNestedFileSpec($value);
         }
 
-        try {
+        if ($value['error'] === UPLOAD_ERR_OK) {
             $stream = $this->streamFactory->createStreamFromFile($value['tmp_name']);
-        } catch (\RuntimeException $e) {
+        } else {
             $stream = $this->streamFactory->createStream();
         }
-
+        
         return $this->uploadedFileFactory->createUploadedFile(
             $stream,
             (int) $value['size'],
