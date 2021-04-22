@@ -54,7 +54,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
         $post = null;
         if ('POST' === $this->getMethodFromEnv($server)) {
             foreach ($headers as $headerName => $headerValue) {
-                if ('content-type' !== \strtolower($headerName)) {
+                if (true === \is_int($headerName) || 'content-type' !== \strtolower($headerName)) {
                     continue;
                 }
                 if (\in_array(
