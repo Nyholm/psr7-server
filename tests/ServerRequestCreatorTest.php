@@ -602,6 +602,9 @@ class ServerRequestCreatorTest extends TestCase
         $this->assertNull($instance->getParsedBody());
     }
 
+    /**
+     * @backupGlobals enabled
+     */
     public function testNoParsedBodyWithPOSTMethodWithoutContentType()
     {
         $_SERVER['REQUEST_METHOD'] = 'POST';
@@ -611,6 +614,7 @@ class ServerRequestCreatorTest extends TestCase
     }
 
     /**
+     * @backupGlobals enabled
      * @dataProvider dataContentTypesThatTriggerParsedBody
      */
     public function testParsedBodyWithPOSTMethodDifferentContentType($parsedBody, $contentType)
@@ -646,5 +650,17 @@ class ServerRequestCreatorTest extends TestCase
                 false, 'application/json',
             ],
         ];
+    }
+
+    /**
+     * @backupGlobals enabled
+     */
+    public function testNumericHeaderFromGlobals()
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['HTTP_1234'] = 'NumericHeader';
+
+        $server = $this->creator->fromGlobals();
+        $this->assertEquals(['1234' => ['NumericHeader']], $server->getHeaders());
     }
 }
