@@ -663,4 +663,14 @@ class ServerRequestCreatorTest extends TestCase
         $server = $this->creator->fromGlobals();
         $this->assertEquals(['1234' => ['NumericHeader']], $server->getHeaders());
     }
+
+    public function testHostHeader()
+    {
+        $_SERVER['HTTP_HOST'] = 'hostname.com';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+
+        $serverRequest = $this->creator->fromGlobals();
+
+        $this->assertCount(1, $serverRequest->getHeader('Host'));
+    }
 }
