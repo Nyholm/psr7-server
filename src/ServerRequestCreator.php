@@ -47,6 +47,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     public function fromGlobals(): ServerRequestInterface
     {
         $server = $_SERVER;
+
         if (false === isset($server['REQUEST_METHOD'])) {
             $server['REQUEST_METHOD'] = 'GET';
         }
@@ -54,6 +55,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
         $headers = \function_exists('getallheaders') ? getallheaders() : static::getHeadersFromServer($_SERVER);
 
         $post = null;
+
         if ('POST' === $this->getMethodFromEnv($server)) {
             foreach ($headers as $headerName => $headerValue) {
                 if (true === \is_int($headerName) || 'content-type' !== \strtolower($headerName)) {
@@ -136,6 +138,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     public static function getHeadersFromServer(array $server): array
     {
         $headers = [];
+
         foreach ($server as $key => $value) {
             // Apache prefixes environment variables with REDIRECT_
             // if they are added by rewrite rules
@@ -179,7 +182,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     private function getMethodFromEnv(array $environment): string
     {
         if (false === isset($environment['REQUEST_METHOD'])) {
-            throw new \InvalidArgumentException('Cannot determine HTTP method');
+            throw new \InvalidArgumentException('Cannot determine HTTP method.');
         }
 
         return $environment['REQUEST_METHOD'];
@@ -195,6 +198,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     private function getUriFromEnvWithHTTP(array $environment): UriInterface
     {
         $uri = $this->createUriFromArray($environment);
+
         if (empty($uri->getScheme())) {
             $uri = $uri->withScheme('http');
         }
@@ -223,7 +227,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
             } elseif (\is_array($value)) {
                 $normalized[$key] = $this->normalizeFiles($value);
             } else {
-                throw new \InvalidArgumentException('Invalid value in files specification');
+                throw new \InvalidArgumentException('Invalid value in files specification.');
             }
         }
 
@@ -302,7 +306,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
      */
     private function createUriFromArray(array $server): UriInterface
     {
-        $uri = $this->uriFactory->createUri('');
+        $uri = $this->uriFactory->createUri();
 
         if (isset($server['HTTP_X_FORWARDED_PROTO'])) {
             $uri = $uri->withScheme($server['HTTP_X_FORWARDED_PROTO']);
