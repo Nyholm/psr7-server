@@ -1,6 +1,10 @@
 name: Backward compatibility check
 
-on: [push]
+on:
+    push:
+        branches: [ master ]
+    pull_request:
+        branches: [ master ]
 
 jobs:
     roave_bc_check:
