@@ -19,13 +19,13 @@ use Psr\Http\Message\UriInterface;
  */
 final class ServerRequestCreator implements ServerRequestCreatorInterface
 {
-    private $serverRequestFactory;
+    private ServerRequestFactoryInterface $serverRequestFactory;
 
-    private $uriFactory;
+    private UriFactoryInterface $uriFactory;
 
-    private $uploadedFileFactory;
+    private UploadedFileFactoryInterface $uploadedFileFactory;
 
-    private $streamFactory;
+    private StreamFactoryInterface $streamFactory;
 
     public function __construct(
         ServerRequestFactoryInterface $serverRequestFactory,

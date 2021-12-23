@@ -14,14 +14,13 @@ use Psr\Http\Message\UploadedFileInterface;
 
 class ServerRequestCreatorTest extends TestCase
 {
-    const NUMBER_OF_FILES = 11;
+    public const NUMBER_OF_FILES = 11;
 
-    public static $filenames = [];
+    public static array $filenames = [];
 
-    /** @var ServerRequestCreator */
-    private $creator;
+    private ServerRequestCreator $creator;
 
-    public static function initFiles()
+    public static function initFiles(): void
     {
         if (!empty(self::$filenames)) {
             return;
@@ -52,7 +51,7 @@ class ServerRequestCreatorTest extends TestCase
         );
     }
 
-    public function dataNormalizeFiles()
+    public function dataNormalizeFiles(): array
     {
         self::initFiles();
 
@@ -626,7 +625,7 @@ class ServerRequestCreatorTest extends TestCase
         $this->assertSame($parsedBody ? $_POST : null, $instance->getParsedBody());
     }
 
-    public function dataContentTypesThatTriggerParsedBody()
+    public function dataContentTypesThatTriggerParsedBody(): array
     {
         return [
             // Acceptable values
