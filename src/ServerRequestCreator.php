@@ -41,8 +41,6 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
 
     /**
      * Create a new server request from the current environment variables.
-     *
-     * @return ServerRequestInterface
      */
     public function fromGlobals(): ServerRequestInterface
     {
@@ -77,18 +75,6 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
 
     /**
      * Create a new server request from a set of arrays.
-     *
-     * @param array $server
-     * @param array $headers
-     * @param array $cookie
-     * @param array $get
-     * @param array|null $post
-     * @param array $files
-     * @param $body
-     *
-     * @return ServerRequestInterface
-     *
-     * @throws \InvalidArgumentException
      */
     public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], ?array $post = null, array $files = [], $body = null): ServerRequestInterface
     {
@@ -130,10 +116,6 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
 
     /**
      * Implementation from Laminas\Diactoros\marshalHeadersFromSapi().
-     *
-     * @param array $server
-     *
-     * @return array
      */
     public static function getHeadersFromServer(array $server): array
     {
@@ -172,12 +154,6 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
 
     /**
      * Get HTTP method from environment variables.
-     *
-     * @param array $environment
-     *
-     * @return string
-     *
-     * @throws \InvalidArgumentException
      */
     private function getMethodFromEnv(array $environment): string
     {
@@ -190,10 +166,6 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
 
     /**
      * Get uri with HTTP scheme from environment variables.
-     *
-     * @param array $environment
-     *
-     * @return UriInterface
      */
     private function getUriFromEnvWithHTTP(array $environment): UriInterface
     {
@@ -275,8 +247,6 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
      * Loops through all nested files and returns a normalized array of
      * UploadedFileInterface instances.
      *
-     * @param array $files
-     *
      * @return UploadedFileInterface[]
      */
     private function normalizeNestedFileSpec(array $files = []): array
@@ -301,8 +271,6 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
      * Create a new uri from server variable.
      *
      * @param array $server Typically $_SERVER or similar structure.
-     *
-     * @return UriInterface
      */
     private function createUriFromArray(array $server): UriInterface
     {
