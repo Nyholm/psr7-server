@@ -14,14 +14,13 @@ use Psr\Http\Message\UploadedFileInterface;
 
 class ServerRequestCreatorTest extends TestCase
 {
-    const NUMBER_OF_FILES = 11;
+    public const NUMBER_OF_FILES = 11;
 
-    public static $filenames = [];
+    public static array $filenames = [];
 
-    /** @var ServerRequestCreator */
-    private $creator;
+    private ServerRequestCreator $creator;
 
-    public static function initFiles()
+    public static function initFiles(): void
     {
         if (!empty(self::$filenames)) {
             return;
@@ -52,7 +51,7 @@ class ServerRequestCreatorTest extends TestCase
         );
     }
 
-    public function dataNormalizeFiles()
+    public function dataNormalizeFiles(): array
     {
         self::initFiles();
 
@@ -63,7 +62,7 @@ class ServerRequestCreatorTest extends TestCase
                         'name' => 'MyFile.txt',
                         'type' => 'text/plain',
                         'tmp_name' => self::$filenames[0],
-                        'error' => '0',
+                        'error' => 0,
                         'size' => '123',
                     ],
                 ],
@@ -141,14 +140,14 @@ class ServerRequestCreatorTest extends TestCase
                         'name' => 'MyFile.txt',
                         'type' => 'text/plain',
                         'tmp_name' => self::$filenames[3],
-                        'error' => '0',
+                        'error' => 0,
                         'size' => '123',
                     ],
                     'image_file' => [
                         'name' => '',
                         'type' => '',
                         'tmp_name' => self::$filenames[4],
-                        'error' => '4',
+                        'error' => 4,
                         'size' => '0',
                     ],
                 ],
@@ -185,8 +184,8 @@ class ServerRequestCreatorTest extends TestCase
                             1 => self::$filenames[6],
                         ],
                         'error' => [
-                            0 => '0',
-                            1 => '0',
+                            0 => 0,
+                            1 => 0,
                         ],
                         'size' => [
                             0 => '123',
@@ -216,10 +215,10 @@ class ServerRequestCreatorTest extends TestCase
                             ],
                         ],
                         'error' => [
-                            'other' => '0',
+                            'other' => 0,
                             'test' => [
-                                0 => '0',
-                                1 => '4',
+                                0 => 0,
+                                1 => 4,
                             ],
                         ],
                         'size' => [
@@ -626,7 +625,7 @@ class ServerRequestCreatorTest extends TestCase
         $this->assertSame($parsedBody ? $_POST : null, $instance->getParsedBody());
     }
 
-    public function dataContentTypesThatTriggerParsedBody()
+    public function dataContentTypesThatTriggerParsedBody(): array
     {
         return [
             // Acceptable values

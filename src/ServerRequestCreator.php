@@ -19,13 +19,13 @@ use Psr\Http\Message\UriInterface;
  */
 final class ServerRequestCreator implements ServerRequestCreatorInterface
 {
-    private $serverRequestFactory;
+    private ServerRequestFactoryInterface $serverRequestFactory;
 
-    private $uriFactory;
+    private UriFactoryInterface $uriFactory;
 
-    private $uploadedFileFactory;
+    private UploadedFileFactoryInterface $uploadedFileFactory;
 
-    private $streamFactory;
+    private StreamFactoryInterface $streamFactory;
 
     public function __construct(
         ServerRequestFactoryInterface $serverRequestFactory,
@@ -40,11 +40,12 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Create a new server request from the current environment variables.
      */
     public function fromGlobals(): ServerRequestInterface
     {
         $server = $_SERVER;
+
         if (false === isset($server['REQUEST_METHOD'])) {
             $server['REQUEST_METHOD'] = 'GET';
         }
@@ -52,6 +53,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
         $headers = \function_exists('getallheaders') ? getallheaders() : static::getHeadersFromServer($_SERVER);
 
         $post = null;
+
         if ('POST' === $this->getMethodFromEnv($server)) {
             foreach ($headers as $headerName => $headerValue) {
                 if (true === \is_int($headerName) || 'content-type' !== \strtolower($headerName)) {
@@ -72,7 +74,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Create a new server request from a set of arrays.
      */
     public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], ?array $post = null, array $files = [], $body = null): ServerRequestInterface
     {
@@ -118,6 +120,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     public static function getHeadersFromServer(array $server): array
     {
         $headers = [];
+
         foreach ($server as $key => $value) {
             // Apache prefixes environment variables with REDIRECT_
             // if they are added by rewrite rules
@@ -149,18 +152,25 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
         return $headers;
     }
 
+    /**
+     * Get HTTP method from environment variables.
+     */
     private function getMethodFromEnv(array $environment): string
     {
         if (false === isset($environment['REQUEST_METHOD'])) {
-            throw new \InvalidArgumentException('Cannot determine HTTP method');
+            throw new \InvalidArgumentException('Cannot determine HTTP method.');
         }
 
         return $environment['REQUEST_METHOD'];
     }
 
+    /**
+     * Get uri with HTTP scheme from environment variables.
+     */
     private function getUriFromEnvWithHTTP(array $environment): UriInterface
     {
         $uri = $this->createUriFromArray($environment);
+
         if (empty($uri->getScheme())) {
             $uri = $uri->withScheme('http');
         }
@@ -171,7 +181,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     /**
      * Return an UploadedFile instance array.
      *
-     * @param array $files A array which respect $_FILES structure
+     * @param array $files An array which respects $_FILES structure.
      *
      * @return UploadedFileInterface[]
      *
@@ -189,7 +199,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
             } elseif (\is_array($value)) {
                 $normalized[$key] = $this->normalizeFiles($value);
             } else {
-                throw new \InvalidArgumentException('Invalid value in files specification');
+                throw new \InvalidArgumentException('Invalid value in files specification.');
             }
         }
 
@@ -260,11 +270,11 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     /**
      * Create a new uri from server variable.
      *
-     * @param array $server typically $_SERVER or similar structure
+     * @param array $server Typically $_SERVER or similar structure.
      */
     private function createUriFromArray(array $server): UriInterface
     {
-        $uri = $this->uriFactory->createUri('');
+        $uri = $this->uriFactory->createUri();
 
         if (isset($server['HTTP_X_FORWARDED_PROTO'])) {
             $uri = $uri->withScheme($server['HTTP_X_FORWARDED_PROTO']);
