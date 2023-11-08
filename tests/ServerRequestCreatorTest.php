@@ -63,7 +63,7 @@ class ServerRequestCreatorTest extends TestCase
                         'name' => 'MyFile.txt',
                         'type' => 'text/plain',
                         'tmp_name' => self::$filenames[0],
-                        'error' => '0',
+                        'error' => UPLOAD_ERR_OK,
                         'size' => '123',
                     ],
                 ],
@@ -141,14 +141,14 @@ class ServerRequestCreatorTest extends TestCase
                         'name' => 'MyFile.txt',
                         'type' => 'text/plain',
                         'tmp_name' => self::$filenames[3],
-                        'error' => '0',
+                        'error' => UPLOAD_ERR_OK,
                         'size' => '123',
                     ],
                     'image_file' => [
                         'name' => '',
                         'type' => '',
                         'tmp_name' => self::$filenames[4],
-                        'error' => '4',
+                        'error' => UPLOAD_ERR_NO_FILE,
                         'size' => '0',
                     ],
                 ],
@@ -185,8 +185,8 @@ class ServerRequestCreatorTest extends TestCase
                             1 => self::$filenames[6],
                         ],
                         'error' => [
-                            0 => '0',
-                            1 => '0',
+                            0 => UPLOAD_ERR_OK,
+                            1 => UPLOAD_ERR_OK,
                         ],
                         'size' => [
                             0 => '123',
@@ -216,10 +216,10 @@ class ServerRequestCreatorTest extends TestCase
                             ],
                         ],
                         'error' => [
-                            'other' => '0',
+                            'other' => UPLOAD_ERR_OK,
                             'test' => [
-                                0 => '0',
-                                1 => '4',
+                                0 => UPLOAD_ERR_OK,
+                                1 => UPLOAD_ERR_NO_FILE,
                             ],
                         ],
                         'size' => [
