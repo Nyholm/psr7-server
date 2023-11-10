@@ -81,12 +81,21 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
         $protocol = isset($server['SERVER_PROTOCOL']) ? \str_replace('HTTP/', '', $server['SERVER_PROTOCOL']) : '1.1';
 
         $serverRequest = $this->serverRequestFactory->createServerRequest($method, $uri, $server);
+        $hasHostHeaderFromUri = $serverRequest->hasHeader('Host');
+
         foreach ($headers as $name => $value) {
             // Because PHP automatically casts array keys set with numeric strings to integers, we have to make sure
             // that numeric headers will not be sent along as integers, as withAddedHeader can only accept strings.
             if (\is_int($name)) {
                 $name = (string) $name;
             }
+
+            // If there is a Host header present, prefer that hostname over the URI hostname.
+            if ($hasHostHeaderFromUri && 'host' === \strtolower($name)) {
+                $serverRequest = $serverRequest->withoutHeader('Host');
+                $hasHostHeaderFromUri = false;
+            }
+
             $serverRequest = $serverRequest->withAddedHeader($name, $value);
         }
 
