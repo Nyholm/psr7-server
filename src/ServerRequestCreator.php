@@ -276,7 +276,7 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
             }
 
             if (isset($server['SERVER_PORT'])) {
-                $uri = $uri->withPort($server['SERVER_PORT']);
+                $uri = $uri->withPort((int) $server['SERVER_PORT']);
             }
         }
 
