@@ -87,6 +87,13 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
             if (\is_int($name)) {
                 $name = (string) $name;
             }
+            // The PSR-7 implementation may already have derived a Host header from the URI;
+            // replace it rather than adding a second value.
+            if ('host' === \strtolower($name)) {
+                $serverRequest = $serverRequest->withHeader($name, $value);
+
+                continue;
+            }
             $serverRequest = $serverRequest->withAddedHeader($name, $value);
         }
 
