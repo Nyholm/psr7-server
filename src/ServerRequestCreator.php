@@ -212,22 +212,34 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
             return $this->normalizeNestedFileSpec($value);
         }
 
-        if (UPLOAD_ERR_OK !== $value['error']) {
+        if (!isset($value['error']) || !\is_scalar($value['error']) || !\is_numeric($value['error'])) {
+            throw new \InvalidArgumentException('Invalid value in files specification: missing or invalid "error"');
+        }
+        foreach (['name', 'type'] as $optional) {
+            if (isset($value[$optional]) && !\is_string($value[$optional])) {
+                throw new \InvalidArgumentException(\sprintf('Invalid value in files specification: "%s" must be a string', $optional));
+            }
+        }
+
+        $error = (int) $value['error'];
+        if (UPLOAD_ERR_OK !== $error) {
             $stream = $this->streamFactory->createStream();
         } else {
             try {
-                $stream = $this->streamFactory->createStreamFromFile($value['tmp_name']);
+                $stream = $this->streamFactory->createStreamFromFile((string) $value['tmp_name']);
             } catch (\RuntimeException $e) {
+                // The temporary file is gone or unreadable: do not report a successful upload.
                 $stream = $this->streamFactory->createStream();
+                $error = UPLOAD_ERR_NO_FILE;
             }
         }
 
         return $this->uploadedFileFactory->createUploadedFile(
             $stream,
-            (int) $value['size'],
-            (int) $value['error'],
-            $value['name'],
-            $value['type']
+            isset($value['size']) ? (int) $value['size'] : null,
+            $error,
+            $value['name'] ?? null,
+            $value['type'] ?? null
         );
     }
 
@@ -243,13 +255,19 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     {
         $normalizedFiles = [];
 
+        foreach (['size', 'error', 'name', 'type'] as $field) {
+            if (isset($files[$field]) && !\is_array($files[$field])) {
+                throw new \InvalidArgumentException(\sprintf('Invalid value in files specification: "%s" must be an array like "tmp_name"', $field));
+            }
+        }
+
         foreach (\array_keys($files['tmp_name']) as $key) {
             $spec = [
                 'tmp_name' => $files['tmp_name'][$key],
-                'size' => $files['size'][$key],
-                'error' => $files['error'][$key],
-                'name' => $files['name'][$key],
-                'type' => $files['type'][$key],
+                'size' => $files['size'][$key] ?? null,
+                'error' => $files['error'][$key] ?? null,
+                'name' => $files['name'][$key] ?? null,
+                'type' => $files['type'][$key] ?? null,
             ];
             $normalizedFiles[$key] = $this->createUploadedFileFromSpec($spec);
         }
