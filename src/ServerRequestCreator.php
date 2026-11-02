@@ -119,6 +119,10 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
     {
         $headers = [];
         foreach ($server as $key => $value) {
+            if (!\is_string($key)) {
+                continue;
+            }
+
             // Apache prefixes environment variables with REDIRECT_
             // if they are added by rewrite rules
             if (0 === \strpos($key, 'REDIRECT_')) {
@@ -131,14 +135,17 @@ final class ServerRequestCreator implements ServerRequestCreatorInterface
                 }
             }
 
-            if ($value && 0 === \strpos($key, 'HTTP_')) {
+            // Keep "0" (e.g. "Content-Length: 0"); only skip empty values.
+            $hasValue = null !== $value && '' !== $value && false !== $value;
+
+            if ($hasValue && 0 === \strpos($key, 'HTTP_')) {
                 $name = \strtr(\strtolower(\substr($key, 5)), '_', '-');
                 $headers[$name] = $value;
 
                 continue;
             }
 
-            if ($value && 0 === \strpos($key, 'CONTENT_')) {
+            if ($hasValue && 0 === \strpos($key, 'CONTENT_')) {
                 $name = 'content-'.\strtolower(\substr($key, 8));
                 $headers[$name] = $value;
 
